@@ -1,79 +1,108 @@
-//your code here
-// 1. loadin/placing the first 5 images from images folder to the the screen
-let mainDiv = document.getElementById('main');
-for (let i = 1; i <= 5; i++) {
-    let img = document.createElement('img');
-    img.setAttribute('src', `images/${i}.jpeg`);
-    img.setAttribute('data-ns-img', i)
-    img.onclick = function (e) {
-        readCaptcha(this);
-    };
-    img.height = 100;
-    img.width = 100;
-    mainDiv.append(img);
-}
+let image = [];
+        for(let i = 0;i<5;i++)
+        {
+            let t = document.createElement("IMG");
+            t.setAttribute("data-ns-test",`img${i+1}`);
+            t.width = 100;
+            t.height = 100;
+            t.onclick = (e)=>captchaClick(e);
+            t.src = `images/${i+1}.jpg`;
+            image.push(t);
+        }
+        let temp = Math.floor(Math.random()*5);
+        let t = document.createElement("IMG");
+        t.setAttribute("data-ns-test",`img${temp+1}`);
+        t.width = 100;
+        t.height = 100;
+        t.onclick = (e)=>captchaClick(e);
+        t.src = `images/${temp+1}.jpg`;
+        image.push(t);
+        image.sort(() => Math.random() - 0.5);
+        for(let i = 0;i<6;i++)
+        {
+            document.getElementById("main").appendChild(image[i]);
+        }
+        let captcha = [];
+        function clearCaptcha()
+        {
+            // console.log("Clearing captcha");
+            for(let i = 0;i<6;i++)
+            {
+                image[i].onclick = (e)=>captchaClick(e);
+            }
+            captcha = [];
+            try{
+                document.getElementById("para").remove();
+            }
+            catch(e){
+            }
+            try{
+                document.getElementById("btn").remove();
+            }
+            catch(e){
+            }
+            try{
+                document.getElementById("reset").remove();
+            }
+            catch(e){
+            }
+        }
+        function captchaClick(e)
+        {
+            console.log(e.target.attributes["data-ns-test"].nodeValue)
+            captcha.push(e.target.attributes["data-ns-test"].nodeValue);
+            e.target.onclick = ()=>{};
+            // console.log(captcha);
+            if(captcha.length === 1)
+            {
+                let p = document.createElement("button");
+                p.id = "reset";
+                p.innerHTML = "Reset";
+                p.onclick = () => {
+                    clearCaptcha();
+                }
+                document.getElementById("main").appendChild(p);
+            }
+            if(captcha.length === 2)
+            {
+                let t = document.createElement("button");
+                t.id = "btn";
+                t.innerHTML = "Verify";
+                t.onclick = () => {
+                    captchaVerify();
+                }
+                document.getElementById("main").appendChild(t);
+            }
+            else if(captcha.length > 2)
+            {
+                try{
+                document.getElementById("btn").remove();
+                }
+                catch(e){
+                }
+            }
+            try{
+                document.getElementById("para").remove();
+            }
+            catch(e){
+            }
+        }
+        function captchaVerify()
+        {
+            if(captcha.length === 2 && captcha[0] === captcha[1])
+            {
+                let t = document.createElement("P");
+                t.innerHTML="You are a human. Congratulations!";
+                t.id="para";
+                document.getElementById("main").appendChild(t);
+            }
+            else
+            {
+                let t = document.createElement("P");
+                t.innerHTML="We can't verify you as a human. You selected the non-identical tiles.";
+                t.id="para";
+                document.getElementById("main").appendChild(t);
+            }
+            document.getElementById("btn").remove();
+        }
 
-// generate a random number between 1 and 5
-let n = Math.floor(Math.random() * 5) + 1;
-let img = document.createElement('img');
-img.setAttribute('src', `images/${n}.jpeg`);
-img.setAttribute('data-ns-img', n)
-img.height = 100;
-img.width = 100;
-img.onclick = function (e) {
-    readCaptcha(this);
-};
-mainDiv.append(img);
-
-let captcha = [];
-let flag = false;
-let click1 = 0;
-let click2 = 0;
-let verify = document.createElement('button');
-verify.innerHTML = 'Verify';
-
-let reset = document.createElement('button');
-reset.innerHTML = 'Reset';
-
-function readCaptcha(e) {
-    console.log(e.getAttribute('data-ns-img'));
-    // captcha.push(e.getAttribute('data-ns-img'));
-    // console.log(captcha);
-    if (flag != false)
-        click2 = e.getAttribute('data-ns-img');
-    else
-        click1 = e.getAttribute('data-ns-img');
-
-    // flag = true;
-    console.log(click1, click2);
-
-    if (click1 != 0 && flag == false && !mainDiv.contains(reset)) {
-
-        mainDiv.append(reset);
-        reset.onclick = resetCaptcha;
-    }
-    if (click1 != 0 && click2 != 0 && !mainDiv.contains(verify)) {
-        // let verify = document.createElement('button');
-        // verify.innerHTML = 'Verify';
-        mainDiv.append(verify);
-        verify.onclick = checkCaptcha;
-    }
-    flag = true;
-}
-
-//
-function checkCaptcha() {
-    if (click1 == click2) {
-        console.log('verified');
-    }
-    else {
-        console.log('not verified');
-    }
-}
-
-function resetCaptcha() {
-    // location.reload();
-    click1 = 0;
-    click2 = 0;
-    flag = false;
-}
